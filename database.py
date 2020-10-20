@@ -44,6 +44,7 @@ def create_table_library():
     with DatabaseContextManager("db") as db:
         db.execute(query)
 
+
 # ------------------------CRUD------------------------
 # CRUD stands for Create, Read, Update, Delete
 # Create or in SQL INSERT is used to create new records in the database.
@@ -53,22 +54,25 @@ def create_table_library():
 
 # Create function
 def create_book(title: str, author: str, pages: int, library_id: int):
-    query = f"""INSERT INTO Books(title, author, pages, library_id) VALUES(?,?,?,?)"""
+    query = """INSERT INTO Books(title, author, pages, library_id) VALUES(?,?,?,?)"""
     # Question marks are used in initial query to have placeholders for upcoming parameters.
     # (This is used to protect ourselves from SQL Injection attacks)
+    #  Instead of question marks in some languages/sql engines we use %, s%
     parameters = [title, author, pages, library_id]
     # Parameters are used to pass values that were given when calling the function.
     with DatabaseContextManager("db") as db:
-        db.execute(sql=query, parameters=parameters)
+        db.execute(query, parameters)
         # We can pass sql and parameters to execute method which will set our values by order from parameters array or touple
 
 
 # Read function
-def get_books():
-    query = """SELECT * FROM Books"""
-    with DatabaseContextManager("db") as db:
-        db.execute(query)
-        for record in db.fetchall():
+def get_books(title):
+    query = """SELECT * FROM Books
+                WHERE title = ?"""
+    parameters = [title]
+    with DatabaseContextManager("db") as cursor:
+        cursor.execute(query, parameters)
+        for record in cursor.fetchmany(2):
             print(record)
     print("------------------------------------------------------")
     # print for convenience in terminal
@@ -77,7 +81,7 @@ def get_books():
 # Update function
 def update_book_title(old_title: str, new_title: str):
     query = """UPDATE Books
-                SET title = ?
+                SET title = ?, 
                 WHERE title = ?"""
     parameters = [new_title, old_title]
     with DatabaseContextManager("db") as db:
@@ -140,3 +144,11 @@ def drop_table():
     query = """DROP TABLE Library"""
     with DatabaseContextManager("db") as db:
         db.execute(query)
+
+"Foreign key table"
+Table = "Customer"
+Fields = [first_name, last_name, age, Foreign Key (compnay_id) References Companies(id)]
+
+
+Table = "Companies"
+Fields = [company_name, employee_count]
