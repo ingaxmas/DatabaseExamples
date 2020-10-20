@@ -32,6 +32,7 @@ def create_table_books():
     pages INTEGER,
     library_id INTEGER,
     FOREIGN KEY (library_id) REFERENCES Library(library_id))"""
+
     with DatabaseContextManager("db") as db:
         db.execute(query)
 
@@ -52,14 +53,15 @@ def create_table_library():
 # Delete for deleting records that are already created.
 
 # Create function
-def create_book(title: str, author: str, pages: int, library_id: int):
-    query = f"""INSERT INTO Books(title, author, pages, library_id) VALUES(?,?,?,?)"""
+def create_book(title: str, pages: int, library_id: int, author: str):
+    query = """INSERT INTO Books(title, author, pages, library_id) VALUES(?,?,?,?)"""
     # Question marks are used in initial query to have placeholders for upcoming parameters.
     # (This is used to protect ourselves from SQL Injection attacks)
+    # Question mark can be other symbols in other engines/languages(%, s%)
     parameters = [title, author, pages, library_id]
     # Parameters are used to pass values that were given when calling the function.
     with DatabaseContextManager("db") as db:
-        db.execute(sql=query, parameters=parameters)
+        db.execute(query, parameters)
         # We can pass sql and parameters to execute method which will set our values by order from parameters array or touple
 
 
@@ -80,8 +82,8 @@ def update_book_title(old_title: str, new_title: str):
                 SET title = ?
                 WHERE title = ?"""
     parameters = [new_title, old_title]
-    with DatabaseContextManager("db") as db:
-        db.execute(query, parameters)
+    with DatabaseContextManager("db") as cursor:
+        cursor.execute(query, parameters)
 
 
 # Delete function
@@ -140,3 +142,6 @@ def drop_table():
     query = """DROP TABLE Library"""
     with DatabaseContextManager("db") as db:
         db.execute(query)
+
+
+"aaaaaaaaaa"
