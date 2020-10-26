@@ -65,7 +65,6 @@ def get_accounts():
     query = """SELECT * FROM Accounts"""
     with DatabaseContextManager("db") as db:
         db.execute(query)
-        db.lastrowid
         for row in db.fetchall():
             print(row)
     print("------------------------------------------------------------")
